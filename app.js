@@ -8,16 +8,16 @@ import cors from "cors";
 import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
-import stripePackage from 'stripe';
+// import stripePackage from 'stripe';
 import http from 'http'; // Import http module
 import { Server } from "socket.io";  // Create HTTP server
 const app = express();
 const server = http.createServer(app);
 import Message from "./models/messageSchema.js"
+import membershipRoute from "./routes/membershipRoutes.js"
 
 
-
-const stripe = stripePackage("sk_test_51P10z2SGpizPxAHaSlTGprId3dKnA9KyRayVkMdEkj8738mKJIbwkwA56Jmxv9n0VTQFEaPviPugDdVBbu5PbGB500kaTG3r01");
+// const stripe = stripePackage("sk_test_51P10z2SGpizPxAHaSlTGprId3dKnA9KyRayVkMdEkj8738mKJIbwkwA56Jmxv9n0VTQFEaPviPugDdVBbu5PbGB500kaTG3r01");
 config({ path: "./config/config.env" });
 
 app.use(
@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
-    
+
     rooms[socket.id] = roomId;
     console.log(`User ${socket.id} joined room ${roomId}`);
   });
@@ -90,65 +90,8 @@ app.use(
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/job", jobRouter);
 app.use("/api/v1/application", applicationRouter);
-// app.post('/api/submit-form', (req, res) => {
-//   const formData = req.body;
-//   console.log('Received form data:', formData.name);
-//   res.status(200).json({ message: 'Form submitted successfully' });
-// });
 
-app.post('/api/create-checkout-session', async (req, res) => {
-  try {
-    const products = req.body;
-    console.log("this is products", products)
-
-    const lineItems = products.map(product => ({
-      price_data: {
-        currency: 'inr',
-        product_data: {
-          name: product.name,
-        },
-        unit_amount: product.price, // Amount in cents
-        recurring: {
-          interval: 'month', // Define the billing interval (e.g., month, year)
-        },
-      },
-      quantity: product.quantity,
-    }));
-
-    // Create customer with provided details
-    const customer = await stripe.customers.create({
-      name: 'naibhavik',
-      email: 'naibhavik68@gmail.com',
-      address: {
-        city: 'palanpur',
-        country: 'China',
-        line1: 'dijfjd',
-        line2: 'djfdhf',
-        postal_code: 'dfjdjf',
-        state: 'Gujarat',
-      }
-    });
-
-    // Create checkout session with customer ID
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'subscription',
-      success_url: 'http://localhost:3000/success',
-      cancel_url: 'http://localhost:3000/cancel',
-      customer: customer.id,
-    });
-
-    res.json({ id: session.id });
-  } catch (error) {
-    console.error('Stripe API Error:', error.message);
-    res.status(500).json({
-      msg: 'Failed to create checkout session',
-      error: error.message
-    });
-  }
-});
-
+app.use("/api/create-checkout-session", membershipRoute)
 
 dbConnection();
 
