@@ -25,13 +25,14 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your Address!"],
   },
+
   resume: {
     public_id: {
-      type: String, 
+      type: String,
       required: true,
     },
     url: {
-      type: String, 
+      type: String,
       required: true,
     },
   },
