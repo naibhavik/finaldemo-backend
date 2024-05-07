@@ -25,6 +25,11 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your Address!"],
   },
+  roomid: {
+    type: String,
+    default:"pending",
+    required: [false, "Please enter your Address!"],
+  },
 
   resume: {
     public_id: {

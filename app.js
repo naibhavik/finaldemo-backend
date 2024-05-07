@@ -65,13 +65,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("disconnect", () => {
-    const roomId = rooms[socket.id];
-    if (roomId) {
-      console.log(`User ${socket.id} disconnected from room ${roomId}`);
-      delete rooms[socket.id];
-    }
-  });
+  // socket.on("disconnect", () => {
+  //   const roomId = rooms[socket.id];
+  //   if (roomId) {
+  //     console.log(`User ${socket.id} disconnected from room ${roomId}`);
+  //     delete rooms[socket.id];
+  //   }
+  // });
 });
 app.use(cookieParser());
 app.use(express.json());

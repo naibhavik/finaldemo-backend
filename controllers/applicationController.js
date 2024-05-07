@@ -33,7 +33,7 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
     );
     return next(new ErrorHandler("Failed to upload Resume to Cloudinary", 500));
   }
-  const { name, email, coverLetter, phone, address,jobId } = req.body;
+  const { name, email, coverLetter, phone, address, jobId, roomid } = req.body;
   const applicantID = {
     user: req.user._id,
     role: "Job Seeker",
@@ -59,7 +59,7 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
     !applicantID ||
     !employerID ||
     !resume
-    
+
   ) {
     return next(new ErrorHandler("Please fill all fields.", 400));
   }
@@ -71,6 +71,7 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
     address,
     applicantID,
     employerID,
+    roomid,
     resume: {
       public_id: cloudinaryResponse.public_id,
       url: cloudinaryResponse.secure_url,
@@ -86,6 +87,7 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
 export const employerGetAllApplications = catchAsyncErrors(
   async (req, res, next) => {
     const { role } = req.user;
+    console.log(role)
     if (role === "Job Seeker") {
       return next(
         new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
@@ -103,11 +105,11 @@ export const employerGetAllApplications = catchAsyncErrors(
 export const jobseekerGetAllApplications = catchAsyncErrors(
   async (req, res, next) => {
     const { role } = req.user;
-    // if (role === "Employer") {
-    //   return next(
-    //     new ErrorHandler("Employer not allowed to access this resource.", 400)
-    //   );
-    // }
+    if (role === "Employer") {
+      return next(
+        new ErrorHandler("Employer not allowed to access this resource.", 400)
+      );
+    }
     const { _id } = req.user;
     const applications = await Application.find({ "applicantID.user": _id });
     res.status(200).json({
@@ -137,3 +139,5 @@ export const jobseekerDeleteApplication = catchAsyncErrors(
     });
   }
 );
+
+

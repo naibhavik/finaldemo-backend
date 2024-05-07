@@ -114,14 +114,10 @@ export const sendRestPasswordMail = async (name, email, token) => {
       }
 
     });
-
-
-
   } catch (error) {
 
     console.log("error", error)
   }
-
 
 }
 export const forget_password = async (req, res) => {
@@ -130,9 +126,6 @@ export const forget_password = async (req, res) => {
   try {
     const email = req.body.email;
     const userData = await User.findOne({ email: email })
-
-
-
     if (userData) {
 
       const randomString = randomstring.generate();
@@ -146,18 +139,11 @@ export const forget_password = async (req, res) => {
       res.status(200).send({ success: false, msg: "this email does not exists." })
     }
 
-
-
-
-
   } catch (error) {
 
     res.status(200).send({ success: false, msg: error })
 
   }
-
-
-
 }
 
 
