@@ -87,7 +87,7 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
 export const employerGetAllApplications = catchAsyncErrors(
   async (req, res, next) => {
     const { role } = req.user;
-    console.log(role)
+
     if (role === "Job Seeker") {
       return next(
         new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
@@ -105,11 +105,11 @@ export const employerGetAllApplications = catchAsyncErrors(
 export const jobseekerGetAllApplications = catchAsyncErrors(
   async (req, res, next) => {
     const { role } = req.user;
-    if (role === "Employer") {
-      return next(
-        new ErrorHandler("Employer not allowed to access this resource.", 400)
-      );
-    }
+    // if (role === "Employer") {
+    //   return next(
+    //     new ErrorHandler("Employer not allowed to access this resource.", 400)
+    //   );
+    // }
     const { _id } = req.user;
     const applications = await Application.find({ "applicantID.user": _id });
     res.status(200).json({
