@@ -25,7 +25,7 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your Address!"],
   },
-  roomid: {
+  jobseekerstatus: {
     type: String,
     default:"pending",
     required: [false, "Please enter your Address!"],

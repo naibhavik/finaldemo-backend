@@ -42,6 +42,7 @@ app.use("/api/v1/job", jobRouter);
 app.use("/api/v1/application", applicationRouter);
 app.use("/api/create-checkout-session", membershipRoute);
 
+
 dbConnection();
 
 app.use(errorMiddleware);

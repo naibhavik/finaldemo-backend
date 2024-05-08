@@ -17,7 +17,7 @@ router.delete("/delete/:id", isAuthenticated, jobseekerDeleteApplication);
 router.put("/updateRoomId/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { roomId } = req.body;
+    const { jobseekerstatus } = req.body;
 
     // Find the application by ID
     const application = await Application.findById(id);
@@ -27,10 +27,10 @@ router.put("/updateRoomId/:id", async (req, res) => {
     }
 
     // Update the room ID
-    application.roomid = roomId;
+    application.jobseekerstatus = jobseekerstatus;
     await application.save();
 
-    res.status(200).json({ success: true, message: "Room ID updated successfully" });
+    res.status(200).json({ success: true, message: "Job Seeker tatus updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal server error" });

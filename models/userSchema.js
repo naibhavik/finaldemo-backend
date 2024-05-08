@@ -35,9 +35,9 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
 
-  token:{
-    type:String,
-    default:''
+  token: {
+    type: String,
+    default: ''
   }
 });
 
@@ -47,7 +47,7 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
-  this.password = `await bcrypt.hash(this.password, 10)`;
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
 //COMPARING THE USER PASSWORD ENTERED BY USER WITH THE USER SAVED PASSWORD
