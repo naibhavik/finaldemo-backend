@@ -30,10 +30,29 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please select a role"],
     enum: ["Job Seeker", "Employer"],
   },
+  isSubscribed: {
+    type: Boolean,
+    default:'false',
+    required: [false, "Please select a isSubscribed"],
+    
+  },
+  subScriptionType: {
+    type: String,
+    default:'',
+    required: [false, "Please select a subScriptionType"],
+
+  },
+  subscriptionEndTime: {
+    type: String,
+    default:'',
+    required: [false, "Please select a subscriptionEndTime"],
+
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  
 
   token: {
     type: String,

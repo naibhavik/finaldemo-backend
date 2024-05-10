@@ -1,10 +1,13 @@
 import express from "express";
-import { memeber } from "../controllers/membershipController.js";
+import { member } from "../controllers/membershipController.js";
+import { successpage } from "../controllers/membershipController.js";
 
 const router = express.Router();
 
 
-router.post("/payment", memeber);
+router.post("/payment", member);
+router.post("/paymentsuccess", successpage);
+
 
 
 export default router;

@@ -1,40 +1,51 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncError.js";
+import { User } from "../models/userSchema.js";
 import stripePackage from 'stripe';
 
-export const memeber = catchAsyncErrors(
-	async (req, res, next) => {
+const stripe = stripePackage("sk_test_51P10z2SGpizPxAHaSlTGprId3dKnA9KyRayVkMdEkj8738mKJIbwkwA56Jmxv9n0VTQFEaPviPugDdVBbu5PbGB500kaTG3r01");
 
-		const stripe = stripePackage("sk_test_51P10z2SGpizPxAHaSlTGprId3dKnA9KyRayVkMdEkj8738mKJIbwkwA56Jmxv9n0VTQFEaPviPugDdVBbu5PbGB500kaTG3r01");
+export const member = catchAsyncErrors(
+	async (req, res) => {
 		try {
-			const products = req.body;
-			console.log("this is products", products)
+			const { subScriptionType,email } = req.body;
+         console.log("sandip",subScriptionType)
+			let interval = 'month';
+			let price = null; // Default price for monthly subscription in cents
 
-			const lineItems = products.map(product => ({
+			switch (subScriptionType) {
+				case 'monthly':
+					interval = 'month';
+					price = 1000; // Monthly subscription price
+					break;
+				case 'quarterly':
+					interval = 'quarterly';
+					price = 2500; // Quarterly subscription price (3 months)
+					break;
+				case 'yearly':
+					interval = 'year';
+					price = 10000; // Yearly subscription price (12 months)
+					break;
+				default:
+					throw new Error('Invalid plan');
+			}
+
+			const lineItems = [{
 				price_data: {
 					currency: 'inr',
 					product_data: {
-						name: product.name,
+						name: `Membership (${subScriptionType})`, // Set name based on plan
 					},
-					unit_amount: product.price, // Amount in cents
+					unit_amount: price, // Amount in cents
 					recurring: {
-						interval: 'month', // Define the billing interval (e.g., month, year)
+						interval: interval,
 					},
 				},
-				quantity: product.quantity,
-			}));
+				quantity: 1,
+			}];
 
 			// Create customer with provided details
 			const customer = await stripe.customers.create({
-				name: 'naibhavik',
-				email: 'naibhavik68@gmail.com',
-				address: {
-					city: 'palanpur',
-					country: 'China',
-					line1: 'dijfjd',
-					line2: 'djfdhf',
-					postal_code: 'dfjdjf',
-					state: 'Gujarat',
-				}
+				email: email, // Use provided email
 			});
 
 			// Create checkout session with customer ID
@@ -56,4 +67,43 @@ export const memeber = catchAsyncErrors(
 			});
 		}
 	}
-)
+);
+
+export const successpage = catchAsyncErrors(async (req, res, next) => {
+	try {
+		const { subScriptionType, userid } = req.body;
+		console.log("kreny", subScriptionType)
+	
+		console.log(userid)
+		const user = await User.findById(userid);
+
+		if (!user) {
+			return res.status(404).json({ success: false, message: "User not found" });
+		}
+
+	
+		let subscriptionEndTime = '';
+		if (subScriptionType === 'monthly') {
+			subscriptionEndTime = new Date();
+			subscriptionEndTime.setMonth(subscriptionEndTime.getMonth() + 1);
+		} else if (subScriptionType === 'quarterly') {
+			subscriptionEndTime = new Date();
+			subscriptionEndTime.setMonth(subscriptionEndTime.getMonth() + 3);
+		} else if (subScriptionType === 'yearly') {
+			subscriptionEndTime = new Date();
+			subscriptionEndTime.setFullYear(subscriptionEndTime.getFullYear() + 1);
+		}
+
+	
+		user.subScriptionType = subScriptionType;
+		user.isSubscribed='true'
+		user.subscriptionEndTime = subscriptionEndTime;
+
+		await user.save();
+
+		res.status(200).json({ success: true, message: "Subscription updated successfully" });
+	} catch (error) {
+		next(error);
+	}
+});
+
