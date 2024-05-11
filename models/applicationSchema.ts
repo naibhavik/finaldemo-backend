@@ -27,8 +27,9 @@ const applicationSchema = new mongoose.Schema({
   },
   jobseekerstatus: {
     type: String,
-    default:"pending",
-    required: [false, "Please enter your Address!"],
+    enum: ["Pending", "Approved", "Rejected"], // Define enum values
+    default: "Pending",
+    required: false, // Set required to false if not mandatory
   },
 
   resume: {

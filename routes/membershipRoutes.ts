@@ -1,6 +1,6 @@
 import express from "express";
-import { member } from "../controllers/membershipController.js";
-import { successpage } from "../controllers/membershipController.js";
+import { member } from "../controllers/membershipController";
+import { successpage } from "../controllers/membershipController";
 
 const router = express.Router();
 

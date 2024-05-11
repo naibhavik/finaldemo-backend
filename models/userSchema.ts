@@ -1,8 +1,27 @@
-import mongoose from "mongoose";
-import validator from "validator";
+import mongoose, { Document, Schema, Model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-const userSchema = new mongoose.Schema({
+import validator from "validator";
+
+// Define an interface for the User document
+interface IUser extends Document {
+  name: string;
+  email: string;
+  phone: number;
+  password: string;
+  role: "Job Seeker" | "Employer";
+  isSubscribed: boolean;
+  subScriptionType: string;
+  subscriptionEndTime: string;
+  createdAt: Date;
+  token: string;
+
+  comparePassword(enteredPassword: string): Promise<boolean>;
+  getJWTToken(): string;
+}
+
+// Define the schema
+const userSchema: Schema<IUser> = new Schema<IUser>({
   name: {
     type: String,
     required: [true, "Please enter your Name!"],
@@ -32,53 +51,47 @@ const userSchema = new mongoose.Schema({
   },
   isSubscribed: {
     type: Boolean,
-    default:'false',
-    required: [false, "Please select a isSubscribed"],
-    
+    default: false,
   },
   subScriptionType: {
     type: String,
-    default:'',
-    required: [false, "Please select a subScriptionType"],
-
+    default: "",
   },
   subscriptionEndTime: {
     type: String,
-    default:'',
-    required: [false, "Please select a subscriptionEndTime"],
-
+    default: "",
   },
   createdAt: {
     type: Date,
     default: Date.now,
   },
-  
-
   token: {
     type: String,
-    default: ''
-  }
+    default: "",
+  },
+  
 });
 
-
-//ENCRYPTING THE PASSWORD WHEN THE USER REGISTERS OR MODIFIES HIS PASSWORD
-userSchema.pre("save", async function (next) {
+// Encrypt the password before saving
+userSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-//COMPARING THE USER PASSWORD ENTERED BY USER WITH THE USER SAVED PASSWORD
-userSchema.methods.comparePassword = async function (enteredPassword) {
+// Compare the entered password with the saved password
+userSchema.methods.comparePassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-//GENERATING A JWT TOKEN WHEN A USER REGISTERS OR LOGINS, IT DEPENDS ON OUR CODE THAT WHEN DO WE NEED TO GENERATE THE JWT TOKEN WHEN THE USER LOGIN OR REGISTER OR FOR BOTH. 
+// Generate a JWT token
 userSchema.methods.getJWTToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY!, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
 
-export const User = mongoose.model("User", userSchema);
+// Define and export the User model
+const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
+export default User;

@@ -1,12 +1,12 @@
 import express from "express";
-import { Application } from "../models/applicationSchema.js";
+import { Application } from "../models/applicationSchema";
 import {
   employerGetAllApplications,
   jobseekerDeleteApplication,
   jobseekerGetAllApplications,
   postApplication,
-} from "../controllers/applicationController.js";
-import { isAuthenticated } from "../middlewares/auth.js";
+} from "../controllers/applicationController";
+import { isAuthenticated } from "../middlewares/auth";
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.put("/updateRoomId/:id", async (req, res) => {
     application.jobseekerstatus = jobseekerstatus;
     await application.save();
 
-    res.status(200).json({ success: true, message: "Job Seeker tatus updated successfully" });
+    res.status(200).json({ success: true, message: "Job Seeker status updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal server error" });

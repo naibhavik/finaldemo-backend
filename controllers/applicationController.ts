@@ -1,10 +1,16 @@
-import { catchAsyncErrors } from "../middlewares/catchAsyncError.js";
-import ErrorHandler from "../middlewares/error.js";
-import { Application } from "../models/applicationSchema.js";
-import { Job } from "../models/jobSchema.js";
-import cloudinary from "cloudinary";
+import { catchAsyncErrors } from "../middlewares/catchAsyncError";
+import ErrorHandler from "../middlewares/error";
+import { Application } from "../models/applicationSchema";
+import { Job } from "../models/jobSchema";
+import { v2 as cloudinary } from "cloudinary";
+import { Request, Response, NextFunction } from "express";
+interface CustomRequest extends Request {
+  user?: any; 
+  files?:any;
+}
 
-export const postApplication = catchAsyncErrors(async (req, res, next) => {
+
+export const postApplication = catchAsyncErrors(async (req:CustomRequest, res:Response, next:NextFunction) => {
   const { role } = req.user;
   if (role === "Employer") {
     return next(
@@ -85,7 +91,7 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const employerGetAllApplications = catchAsyncErrors(
-  async (req, res, next) => {
+  async (req:CustomRequest, res:Response, next:NextFunction) => {
     const { role } = req.user;
 
     if (role === "Job Seeker") {
@@ -103,7 +109,7 @@ export const employerGetAllApplications = catchAsyncErrors(
 );
 
 export const jobseekerGetAllApplications = catchAsyncErrors(
-  async (req, res, next) => {
+  async (req: CustomRequest, res: Response) => {
     const { role } = req.user;
     // if (role === "Employer") {
     //   return next(
@@ -120,7 +126,7 @@ export const jobseekerGetAllApplications = catchAsyncErrors(
 );
 
 export const jobseekerDeleteApplication = catchAsyncErrors(
-  async (req, res, next) => {
+  async (req: CustomRequest, res: Response, next: NextFunction) => {
     const { role } = req.user;
     if (role === "Employer") {
       return next(

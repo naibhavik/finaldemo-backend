@@ -1,5 +1,6 @@
-import server from "./app.js";
+// import server from "./app.ts";
 import cloudinary from "cloudinary";
+import server from "./app";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLIENT_NAME,
