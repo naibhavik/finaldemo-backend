@@ -27,9 +27,9 @@ const applicationSchema = new mongoose.Schema({
   },
   jobseekerstatus: {
     type: String,
-    enum: ["Pending", "Approved", "Rejected"], // Define enum values
+    enum: ["Pending", "Approved", "Rejected"],
     default: "Pending",
-    required: false, // Set required to false if not mandatory
+    required: false, 
   },
 
   resume: {

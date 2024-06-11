@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 
-// Define an interface for the User document
+
 interface IUser extends Document {
   name: string;
   email: string;
@@ -20,7 +20,7 @@ interface IUser extends Document {
   getJWTToken(): string;
 }
 
-// Define the schema
+
 const userSchema: Schema<IUser> = new Schema<IUser>({
   name: {
     type: String,
@@ -59,7 +59,7 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
   },
   subscriptionEndTime: {
     type: String,
-    default: "",
+    default:"",
   },
   createdAt: {
     type: Date,
@@ -72,7 +72,7 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
   
 });
 
-// Encrypt the password before saving
+
 userSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) {
     next();
@@ -80,18 +80,18 @@ userSchema.pre<IUser>("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-// Compare the entered password with the saved password
+
 userSchema.methods.comparePassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Generate a JWT token
+
 userSchema.methods.getJWTToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY!, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
 
-// Define and export the User model
+
 const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
 export default User;

@@ -7,8 +7,8 @@ import { Request, Response, NextFunction } from "express";
 dotenv.config();
 interface CustomRequest extends Request {
   user?: any;
-  files?: any;
-  id?:any;
+  // files?: any;
+  id?:string;
 }
 export const isAuthenticated = catchAsyncErrors(
   async (req:CustomRequest, res: Response, next: NextFunction) => {

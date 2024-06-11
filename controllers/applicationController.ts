@@ -111,11 +111,7 @@ export const employerGetAllApplications = catchAsyncErrors(
 export const jobseekerGetAllApplications = catchAsyncErrors(
   async (req: CustomRequest, res: Response) => {
     const { role } = req.user;
-    // if (role === "Employer") {
-    //   return next(
-    //     new ErrorHandler("Employer not allowed to access this resource.", 400)
-    //   );
-    // }
+   
     const { _id } = req.user;
     const applications = await Application.find({ "applicantID.user": _id });
     res.status(200).json({

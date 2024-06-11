@@ -4,8 +4,7 @@ import stripePackage, { Stripe } from "stripe";
 import { Request, Response, NextFunction } from "express";
 
 interface LineItem {
-  // Define the properties of a line item
-  // Adjust these properties based on what you expect to receive
+  
   name: string;
   description: string;
   amount: number;
@@ -15,15 +14,13 @@ interface LineItem {
 
 interface CheckoutSession {
   id: string;
-  // Add other properties you expect to receive in the session object
-  // For example, you might include properties like 'payment_method_types', 'line_items', 'mode', etc.
+  
   payment_method_types: string[];
-  line_items: any[]; // Define this array's structure according to your line items
+  line_items: any[]; 
   mode: string;
   success_url: string;
   cancel_url: string;
-  customer: string; // Assuming 'customer.id' is a string
-  // Add other properties as needed
+  customer: string; 
 }
 
 const stripe = new stripePackage(
@@ -35,20 +32,20 @@ export const member = catchAsyncErrors(
     try {
       const { subScriptionType, email } = req.body;
       let interval:any = undefined;
-      let price: number; // Default price for monthly subscription in cents
+      let price: number;
 
       switch (subScriptionType) {
         case "monthly":
           interval = "month";
-          price = 1000; // Monthly subscription price
+          price = 2500; 
           break;
-        case "quarterly":
-          interval = "quarterly";
-          price = 2500; // Quarterly subscription price (3 months)
+        case "day":
+          interval = "day";
+          price = 1000;
           break;
         case "yearly":
           interval = "year";
-          price = 10000; // Yearly subscription price (12 months)
+          price = 10000; 
           break;
         default:
           throw new Error("Invalid plan");
@@ -61,22 +58,22 @@ export const member = catchAsyncErrors(
             product_data: {
               name: `Membership (${subScriptionType})`,
             },
-            unit_amount: price, // Specify the amount in the smallest currency unit (e.g., cents for USD)
+            unit_amount: price, 
             recurring: {
               interval,
             },
           },
-          quantity: 1, // Specify the quantity of this line item
+          quantity: 1, 
         },
-        // Add more line items as needed
+        
       ];
 
-      // Create customer with provided details
+      
       const customer = await stripe.customers.create({
-        email: email, // Use provided email
+        email: email, 
       });
 
-      // Create checkout session with customer ID
+      
       const session: Stripe.Checkout.Session =
         await stripe.checkout.sessions.create({
           payment_method_types: ["card"],
@@ -101,7 +98,7 @@ export const successpage = catchAsyncErrors(
   async (req: any, res: any, next: any) => {
     try {
       const { subScriptionType, userid } = req.body;
-      console.log("kreny", subScriptionType);
+      console.log(subScriptionType);
 
       console.log(userid);
       const user = await User.findById(userid);
@@ -116,13 +113,17 @@ export const successpage = catchAsyncErrors(
       if (subScriptionType === "monthly") {
         subscriptionEndTime = new Date();
         subscriptionEndTime.setMonth(subscriptionEndTime.getMonth() + 1);
-      } else if (subScriptionType === "quarterly") {
+      } else if (subScriptionType === "day") {
         subscriptionEndTime = new Date();
-        subscriptionEndTime.setMonth(subscriptionEndTime.getMonth() + 3);
+        // subscriptionEndTime.setMonth(subscriptionEndTime.getMonth() + 3);
+        subscriptionEndTime.setDate(subscriptionEndTime.getDate() + 1);
+
       } else if (subScriptionType === "yearly") {
         subscriptionEndTime = new Date();
         subscriptionEndTime.setFullYear(subscriptionEndTime.getFullYear() + 1);
       }
+      console.log("st",subscriptionEndTime);
+      console.log("subcription")
 
       user.subScriptionType = subScriptionType;
       user.isSubscribed = true;

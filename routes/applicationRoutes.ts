@@ -19,14 +19,14 @@ router.put("/updateRoomId/:id", async (req, res) => {
     const { id } = req.params;
     const { jobseekerstatus } = req.body;
 
-    // Find the application by ID
+   
     const application = await Application.findById(id);
 
     if (!application) {
       return res.status(404).json({ success: false, message: "Application not found" });
     }
 
-    // Update the room ID
+  
     application.jobseekerstatus = jobseekerstatus;
     await application.save();
 

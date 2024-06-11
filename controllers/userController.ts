@@ -176,10 +176,10 @@ export const reset_password = async (req: Request, res: Response) => {
       const password = req.body.password;
       console.log("password", password);
 
-      // Hash the pass
+    
       const hashedPassword = await bcrypt.hash(password, 10);
       console.log(hashedPassword);
-      // Update user data with hashed password and clear token
+      
       const userData = await User.findByIdAndUpdate(
         { _id: tokenData._id },
         { $set: { password: hashedPassword, token: "" } },

@@ -5,7 +5,6 @@ import { config } from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
-import socketRouter from "./routes/socketRouter"
 import userRouter from "./routes/userRoutes";
 import nodemailer from "nodemailer";
 import jobRouter from "./routes/jobRoutes";
@@ -36,8 +35,6 @@ app.use(
   })
 );
 
-socketRouter(server); // Initialize Socket.IO
-
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/job", jobRouter);
 app.use("/api/v1/application", applicationRouter);
@@ -45,11 +42,7 @@ app.use("/api/v1/create-checkout-session", membershipRoute);
 app.post("/schedulemeeting",(req:Request,res:Response)=>{
 
   const { meetingId, email, mydate } = req.body;
-
-
   scheduleMeeting(meetingId, email, mydate);
-
-
 
 })
 
@@ -60,28 +53,24 @@ export const scheduleMeeting = async (
   mydate: any
 ) => {
   try {
-    // console.log("3====")
+ 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
       secure: true,
       requireTLS: true,
       auth: {
-        user: "naibhavik68@gecg28.ac.in",
-        pass: "Bhavik@123",
+        user: process.env.MY_EMAIL,
+        pass: process.env.MY_PASSWORD,
       },
     });
-    // console.log("5====")
-
-    // const name = 'Rahul';
-    // const token = 'kdjkfjkdjfjdk';
 
     const mailOptions: any = {
-      from: "naibhavik68@gecg28.ac.in",
+      from: process.env.MY_EMAIL,
       to: email,
       subject: "For Send Mail",
       html:
-        "<p> Hii" +
+        "<p> Hii " +
         "Your apllication is Accepted" +
         "your interview date is" +
         mydate +
@@ -89,8 +78,7 @@ export const scheduleMeeting = async (
         meetingId +
         '">  Meeting link </a>',
     };
-    // < a href = "http://localhost:3000/resetpassword/token" >
-    // console.log("6====")
+   
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
